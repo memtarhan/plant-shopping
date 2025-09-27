@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import ProductList from './components/ProductList';
+import CartItems from './components/CartItems';
+import {useSelector} from "react-redux";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function CartLink() {
+    // show badge count in navbar
+    const total = useSelector(state => state.cart.totalQuantity);
+    return <span>Cart ({total})</span>;
 }
 
-export default App
+function AppWrapper() {
+    const navigate = useNavigate();
+    return (
+        <div>
+            <nav style={{background:'#2e8b57', padding:12, color:'#fff', display:'flex', justifyContent:'space-between'}}>
+                <div><Link to="/" style={{color:'#fff', textDecoration:'none'}}>Paradise Nursery</Link></div>
+                <div>
+                    <button onClick={() => navigate('/plants')}>Plants</button>
+                    <button onClick={() => navigate('/cart')}>Cart</button>
+                </div>
+            </nav>
+
+            <div style={{padding:16}}>
+                <Routes>
+                    <Route path="/" element={<ProductList />} />
+                    <Route path="/plants" element={<ProductList />} />
+                    <Route path="/cart" element={<CartItems onContinueShopping={() => navigate('/plants')} />} />
+                </Routes>
+            </div>
+        </div>
+    );
+}
+
+export default function App() {
+    return (
+        <Router>
+            <AppWrapper />
+        </Router>
+    );
+}
